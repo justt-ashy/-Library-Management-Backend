@@ -24,7 +24,7 @@ public class IssueController {
     // Get a single issued book by ID
     @GetMapping("/{id}")
     public IssuedBook getIssuedBook(@PathVariable Long id) {
-        return issuedBookService.getById(id);
+        return issuedBookService.get(id);
     }
 
     // Create a new issued book (issue a book)
@@ -40,9 +40,9 @@ public class IssueController {
         return issuedBookService.save(issuedBook);
     }
 
-    // Delete an issued book record
-    @DeleteMapping("/{id}")
-    public void deleteIssuedBook(@PathVariable Long id) {
-        issuedBookService.delete(id);
-    }
+//    // Delete an issued book record
+//    @DeleteMapping("/{id}")
+//    public void deleteIssuedBook(@PathVariable Long id) {
+//        issuedBookService.delete(id);
+//    }
 }

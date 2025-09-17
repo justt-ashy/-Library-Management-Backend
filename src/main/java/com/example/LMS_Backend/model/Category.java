@@ -13,6 +13,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "category")
+@Getter
+@Setter
 public class Category implements Serializable {
 
     public static final long serialVersionUID = 1L;
@@ -22,7 +24,7 @@ public class Category implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Setter
+
     @NotNull(message = "*Please enter category name")
     @NotBlank(message = "*Please enter category name")
     @Column(name = "name")
@@ -34,17 +36,13 @@ public class Category implements Serializable {
     @Column(name = "short_name")
     private String shortName;
 
-    @Setter
     @Column(name = "notes")
     @Length(max = 1000, message = "*Must not exceed 1000 characters.")
     private String notes;
 
-    @Setter
     @Column(name = "create_date")
     private Date createDate;
 
-    @Getter
-    @Setter
     @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Book> books;

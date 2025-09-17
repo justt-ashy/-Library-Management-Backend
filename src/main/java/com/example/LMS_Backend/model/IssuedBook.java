@@ -11,18 +11,16 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "issued_book")
+@Setter
+@Getter
 public class IssuedBook implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    @Setter
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-    @Setter
-    @Getter
     @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id")

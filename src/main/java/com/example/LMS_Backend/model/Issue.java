@@ -12,6 +12,8 @@ import java.util.List;
 
 @Entity
 @Table(name="issue")
+@Getter
+@Setter
 public class Issue implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,4 +44,7 @@ public class Issue implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<IssuedBook> issuedBooks;
+
+//    public void setIssueDate(Date date) {
+//    }
 }

@@ -3,7 +3,6 @@ package com.example.LMS_Backend.service;
 
 import java.util.Date;
 import java.util.List;
-
 import com.example.LMS_Backend.model.Category;
 import com.example.LMS_Backend.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,8 @@ public class CategoryService {
     }
 
     public boolean hasUsage(Category category){
-        return !category.getBooks().isEmpty();
+        return category.getBooks().size()>0;
     }
+
 
 }

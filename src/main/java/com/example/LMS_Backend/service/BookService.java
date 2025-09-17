@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+
 @Service
 public class BookService {
 
@@ -27,13 +29,13 @@ public class BookService {
         return bookRepository.countByStatus(Constants.BOOK_STATUS_ISSUED);
     }
 
-    public List<Book> getAll(){
+    public List<Book> getAll() {
         return bookRepository.findAll();
     }
 
-    // ✅ return Optional<Book> for safe handling
-    public Optional<Book> get(Long id){
-        return bookRepository.findById(id);
+    // return Optional<Book> for safe handling
+    public Book get(Long id){
+        return bookRepository.findById(id).get();
     }
 
     public Book getByTag(String tag){
@@ -69,4 +71,10 @@ public class BookService {
     public void delete(Long id){
         bookRepository.deleteById(id);
     }
+
+    public boolean hasUsage(Book book){
+        return issuedBookService.getCountByBook(book)>0;
+    }
+
+
 }

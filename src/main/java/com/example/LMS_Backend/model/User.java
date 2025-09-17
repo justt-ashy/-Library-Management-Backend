@@ -10,6 +10,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "users")
+@Setter
+@Getter
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,13 +39,11 @@ public class User implements Serializable {
     @Column(name="display_name")
     private String displayName;
 
-    // ✅ Getters
-    @Getter
+
     @NotNull
     @Column(name="username")
     private String username;
 
-    @Setter
     @NotNull
     @Column(name="password")
     private String password;
@@ -62,4 +62,6 @@ public class User implements Serializable {
 
     @Column(name="last_modified_date")
     private Date lastModifiedDate;
+
+
 }
