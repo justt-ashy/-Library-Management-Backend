@@ -1,5 +1,6 @@
 package com.example.LMS_Backend.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import com.example.LMS_Backend.model.Book;
 import com.example.LMS_Backend.model.Category;
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/book")
 @CrossOrigin("*")
 public class BookController {

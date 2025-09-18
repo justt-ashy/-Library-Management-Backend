@@ -6,12 +6,13 @@ import com.example.LMS_Backend.model.IssuedBook;
 import com.example.LMS_Backend.service.CategoryService;
 import com.example.LMS_Backend.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/issue")
 @CrossOrigin("*")
 public class IssueController {
