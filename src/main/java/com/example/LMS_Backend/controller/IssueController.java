@@ -1,48 +1,45 @@
 package com.example.LMS_Backend.controller;
 
+import com.example.LMS_Backend.common.Constants;
+import com.example.LMS_Backend.model.Category;
 import com.example.LMS_Backend.model.IssuedBook;
-import com.example.LMS_Backend.service.IssuedBookService;
+import com.example.LMS_Backend.service.CategoryService;
+import com.example.LMS_Backend.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/issued-books")
+@RequestMapping("/issue")
 @CrossOrigin("*")
 public class IssueController {
 
     @Autowired
-    private IssuedBookService issuedBookService;
+    private IssueService issueService;
 
-    // Get all issued books
-    @GetMapping
-    public List<IssuedBook> getAllIssuedBooks() {
-        return issuedBookService.getAll();
+    @Autowired
+    private CategoryService categoryService;
+
+    @ModelAttribute(name = "memberTypes")
+    public List<String> memberTypes(){
+        return Constants.MEMBER_TYPES;
     }
 
-    // Get a single issued book by ID
-    @GetMapping("/{id}")
-    public IssuedBook getIssuedBook(@PathVariable Long id) {
-        return issuedBookService.get(id);
+    @ModelAttribute("categories")
+    public List<Category> getCategories(){
+        return categoryService.getAllBySort();
     }
 
-    // Create a new issued book (issue a book)
-    @PostMapping
-    public IssuedBook issueBook(@RequestBody IssuedBook issuedBook) {
-        return issuedBookService.save(issuedBook);
+    @RequestMapping(value ={"/", "/list"}, method = RequestMethod.GET)
+    public  String listIssuePage(Model model){
+        model.addAttribute("issues", issueService.getAllUnreturned());
+        return "/issue/list";
     }
 
-    // Update an issued book (e.g., mark as returned)
-    @PutMapping("/{id}")
-    public IssuedBook updateIssuedBook(@PathVariable Long id, @RequestBody IssuedBook issuedBook) {
-        issuedBook.setId(id);
-        return issuedBookService.save(issuedBook);
+    @RequestMapping(value="/new", method = RequestMethod.GET)
+    public String newIssuePage(Model model){
+        return "/issue/form";
     }
-
-//    // Delete an issued book record
-//    @DeleteMapping("/{id}")
-//    public void deleteIssuedBook(@PathVariable Long id) {
-//        issuedBookService.delete(id);
-//    }
 }

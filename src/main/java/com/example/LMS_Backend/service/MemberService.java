@@ -41,4 +41,6 @@ public class MemberService {
     public boolean hasUsage(Member member){
         return issueService.getCountByMember(member) > 0;
     }
+
+
 }
