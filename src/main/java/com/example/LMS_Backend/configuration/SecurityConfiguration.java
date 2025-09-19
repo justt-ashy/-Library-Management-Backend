@@ -33,6 +33,7 @@ public class SecurityConfiguration {
                  */
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/rest/**").permitAll()  // Allow REST endpoints for frontend
                         .requestMatchers("/**").hasAnyAuthority(Constants.ROLE_ADMIN, Constants.ROLE_LIBRARIAN)
                         .anyRequest().authenticated()
                 )

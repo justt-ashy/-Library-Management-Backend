@@ -17,16 +17,14 @@ public class ApplicationStartup implements ApplicationListener<ApplicationEvent>
     private UserService userService;
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent){
+    public void onApplicationEvent(ApplicationEvent event){
         initDatabaseEntities();
     }
 
     private void initDatabaseEntities() {
-        if(userService.getAllUsers().size()==0){
+        if(userService.getAll().isEmpty()){
             userService.addNew(new User("Mr. Admin", "admin", "admin", Constants.ROLE_ADMIN));
             userService.addNew(new User("Mr. Librarian", "librarian", "librarian", Constants.ROLE_LIBRARIAN));
         }
     }
-
-
 }

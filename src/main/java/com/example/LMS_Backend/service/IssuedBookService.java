@@ -32,17 +32,13 @@ public class IssuedBookService {
         return issuedBookRepository.save(issuedBook);
     }
 
-//    // Delete an issued book by ID
-//    public void delete(Long id) {
-//        issuedBookRepository.deleteById(id);
-//    }
 
     public int getCountByBook(Book book) {
         return issuedBookRepository.countByBookAndReturned(book, Constants.BOOK_NOT_RETURNED);
     }
 
     public IssuedBook addNew(IssuedBook issuedBook){
-        issuedBook.setReturned(Contants.BOOK_NOT_RETURNED);
+        issuedBook.setReturned(Constants.BOOK_NOT_RETURNED);
         return issuedBookRepository.save(issuedBook);
     }
 }

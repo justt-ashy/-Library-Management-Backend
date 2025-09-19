@@ -4,8 +4,7 @@ package com.example.LMS_Backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +44,4 @@ public class Issue implements Serializable {
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<IssuedBook> issuedBooks;
 
-//    public void setIssueDate(Date date) {
-//    }
 }

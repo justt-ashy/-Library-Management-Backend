@@ -6,7 +6,6 @@ import com.example.LMS_Backend.model.Category;
 import com.example.LMS_Backend.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +28,10 @@ public class BookService {
         return bookRepository.countByStatus(Constants.BOOK_STATUS_ISSUED);
     }
 
-    public List<Book> getAll() {
+    public List<Book> getAll(){
         return bookRepository.findAll();
     }
 
-    // return Optional<Book> for safe handling
     public Book get(Long id){
         return bookRepository.findById(id).get();
     }

@@ -55,7 +55,7 @@ public class IssueRestController {
         List<Book> books = bookService.get(booksIds);
 
        Issue issue = new Issue();
-       Issue.setMember(member);
+       issue.setMember(member);
        issue = issueService.addNew(issue);
 
        for( int k=0; k<books.size();k++){

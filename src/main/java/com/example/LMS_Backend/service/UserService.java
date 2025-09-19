@@ -5,17 +5,14 @@ import com.example.LMS_Backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import lombok.Setter;
-import lombok.Getter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
 @Service
-@Setter
-@Getter
 public class UserService {
 
     @Autowired
@@ -24,10 +21,26 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    public List<User> getAllUsers(){
+        return userRepository.findAllByOrderByDisplayNameAsc();
+    }
+
+    public List<User> getAllActiveUsers(){
+        return userRepository.findAllActiveOrderByDisplayNameAsc(1);
+    }
+
+    public User getByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
+    public User getById(Long id){
+        return userRepository.findById(id).get();
+    }
+
     public User addNew(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.getCreatedDate(new Date());
-        user.getLastModifiedDate(user.getCreatedDate());
+        user.setCreatedDate(new Date());
+        user.setLastModifiedDate(user.getCreatedDate());
         user.setActive(1);
         return userRepository.save(user);
     }
@@ -44,4 +57,18 @@ public class UserService {
     public void delete(Long id){
         userRepository.deleteById(id);
     }
+
+    public Optional<User> getUserByUsername(String username){
+        return Optional.ofNullable(userRepository.findByUsername(username));
+    }
+
+    public List<User> getAll(){
+        return userRepository.findAllActiveOrderByDisplayNameAsc(1);
+    }
+
+    public User get(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
+
+
 }

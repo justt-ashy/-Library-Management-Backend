@@ -53,7 +53,7 @@ public class Member implements Serializable {
     private Date joiningDate;
 
     @Column(name="contact")
-    private Date contact;
+    private String contact;
 
     @Column(name="email")
     private String email;

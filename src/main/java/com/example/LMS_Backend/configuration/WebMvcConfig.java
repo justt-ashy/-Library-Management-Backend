@@ -4,6 +4,7 @@ package com.example.LMS_Backend.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
@@ -24,5 +25,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public BCryptPasswordEncoder passwordEncoder(){
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder;
+    }
+
+    /**
+     * CORS Configuration for Frontend Integration
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/rest/**")
+                .allowedOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:8080")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
