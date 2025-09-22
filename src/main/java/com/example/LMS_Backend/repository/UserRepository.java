@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     public List<User> findAllByOrderByDisplayNameAsc();
 
-    public List<User> findAllActiveOrderByDisplayNameAsc(Integer active);
+    public List<User> findAllByActiveOrderByDisplayNameAsc(Integer active);
 
     // Find a user by username (for login/authentication)
     public User findByUsername(String username);

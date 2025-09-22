@@ -26,7 +26,7 @@ public class UserService {
     }
 
     public List<User> getAllActiveUsers(){
-        return userRepository.findAllActiveOrderByDisplayNameAsc(1);
+        return userRepository.findAllByActiveOrderByDisplayNameAsc(1);
     }
 
     public User getByUsername(String username){
@@ -63,7 +63,7 @@ public class UserService {
     }
 
     public List<User> getAll(){
-        return userRepository.findAllActiveOrderByDisplayNameAsc(1);
+        return userRepository.findAllByActiveOrderByDisplayNameAsc(1);
     }
 
     public User get(Long id){
