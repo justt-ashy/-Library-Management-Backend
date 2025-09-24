@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LMS Frontend</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">Library Management</div>
+    <div class="nav-links">
+      <a href="#/home" class="nav-link">Home</a>
+      <a href="#/books" class="nav-link">Books</a>
+      <a href="#/categories" class="nav-link">Categories</a>
+      <a href="#/issued" class="nav-link">Issued</a>
+    </div>
+    <div class="nav-auth">
+      <div id="auth-guest">
+        <button id="btn-open-login" class="btn">Login</button>
+        <button id="btn-open-signup" class="btn btn-primary">Sign Up</button>
+      </div>
+      <div id="auth-user" class="hidden">
+        <span id="user-info"></span>
+        <button id="btn-logout" class="btn btn-danger">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="app" class="container"></main>
+
+  <div id="modal-overlay" class="modal hidden"></div>
+
+  <div id="modal-login" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header"><h3>Login</h3><button class="modal-close" data-close>×</button></div>
+      <form id="form-login" class="form">
+        <label><span>Username</span><input name="username" required></label>
+        <label><span>Password</span><input type="password" name="password" required></label>
+        <button class="btn btn-primary full" type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-signup" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header"><h3>Sign Up</h3><button class="modal-close" data-close>×</button></div>
+      <form id="form-signup" class="form">
+        <label><span>Username</span><input name="username" required></label>
+        <label><span>Password</span><input type="password" name="password" required></label>
+        <label><span>Display Name</span><input name="display_name" required></label>
+        <label><span>Role</span>
+          <select name="role" required>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </label>
+        <button class="btn btn-primary full" type="submit">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
+
+

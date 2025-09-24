@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LMS SPA</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">Library Management</div>
+    <div class="nav-links">
+      <a href="#/home" class="nav-link">Home</a>
+      <a href="#/books" class="nav-link">Books</a>
+      <a href="#/categories" class="nav-link">Categories</a>
+      <a href="#/issued" class="nav-link">Issued</a>
+    </div>
+    <div class="nav-auth">
+      <div id="auth-guest">
+        <button id="btn-open-login" class="btn">Login</button>
+        <button id="btn-open-signup" class="btn btn-primary">Sign Up</button>
+      </div>
+      <div id="auth-user" class="hidden">
+        <span id="user-info"></span>
+        <button id="btn-logout" class="btn btn-danger">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="app" class="container">
+    <!-- Views will be injected here -->
+  </main>
+
+  <!-- Modals -->
+  <div id="modal-overlay" class="modal hidden">
+      <!-- Add Book Modal -->
+      <div id="modal-add-book" class="modal hidden">
+          <div class="modal-card">
+              <div class="modal-header">
+                  <h3>Add Book</h3>
+                  <button class="modal-close" data-close>×</button>
+              </div>
+              <form id="form-add-book" class="form"></form> <!-- JS injects inputs -->
+          </div>
+      </div>
+
+      <!-- Add Category Modal -->
+      <div id="modal-add-category" class="modal hidden">
+          <div class="modal-card">
+              <div class="modal-header">
+                  <h3>Add Category</h3>
+                  <button class="modal-close" data-close>×</button>
+              </div>
+              <form id="form-add-category" class="form"></form>
+          </div>
+      </div>
+
+      <!-- Issue Book Modal -->
+      <div id="modal-issue-book" class="modal hidden">
+          <div class="modal-card">
+              <div class="modal-header">
+                  <h3>Issue Book</h3>
+                  <button class="modal-close" data-close>×</button>
+              </div>
+              <form id="form-issue-book" class="form"></form>
+          </div>
+      </div>
+
+  </div>
+
+  <div id="modal-login" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Login</h3>
+        <button class="modal-close" data-close>×</button>
+      </div>
+      <form id="form-login" class="form">
+        <label>
+          <span>Username</span>
+          <input name="username" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" required>
+        </label>
+        <button type="submit" class="btn btn-primary full">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-signup" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Sign Up</h3>
+        <button class="modal-close" data-close>×</button>
+      </div>
+      <form id="form-signup" class="form">
+        <label>
+          <span>Username</span>
+          <input name="username" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" required>
+        </label>
+        <label>
+          <span>Display Name</span>
+          <input name="display_name" required>
+        </label>
+        <label>
+          <span>Role</span>
+          <select name="role" required>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-primary full">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="./app.js"></script>
+<!--  <script>-->
+<!--    // Startup route-->
+<!--    window.location.hash = window.location.hash || '#/home';-->
+<!--  </script>-->
+  </body>
+  </html>
+
+
