@@ -1,7 +1,7 @@
 package com.example.LMS_Backend.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,7 +19,7 @@ public class IssuedBook implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @JsonIgnore
+    // @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id")
     @NotNull
