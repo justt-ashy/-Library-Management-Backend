@@ -1,6 +1,24 @@
 // LMS SPA Frontend
 const API_BASE = 'http://localhost:8080';
 
+const Session = {
+  get user(){ const v = localStorage.getItem('lms_user'); return v? JSON.parse(v): null; },
+  set user(u){ u? localStorage.setItem('lms_user', JSON.stringify(u)) : localStorage.removeItem('lms_user'); },
+  get auth(){ return localStorage.getItem('lms_auth'); },
+  set auth(v){ v? localStorage.setItem('lms_auth', v) : localStorage.removeItem('lms_auth'); }
+};
+
+// in request()
+async function request(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers||{}) };
+  if (Session.auth) headers['Authorization'] = `Basic ${Session.auth}`;
+  const res = await fetch(`${path}`, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
+  if (!res.ok) throw new Error(`${res.status}`);
+  const ct = res.headers.get('content-type') || '';
+  return ct.includes('application/json') ? res.json() : res.text();
+}
+
+
 // Simple store
 const Store = {
   get user(){ const x = localStorage.getItem('lms_user'); return x? JSON.parse(x): null },
@@ -28,11 +46,17 @@ const showAuth = () => {
   }
 };
 
-// API wrapper
+function isAdmin(){
+  return !!(Session.user && Session.user.role === 'ADMIN');
+}
+
+// API wrapper (attaches Basic auth if present)
 async function api(path, {method='GET', body, headers}={}){
+  const finalHeaders = { 'Content-Type': 'application/json', ...(headers||{}) };
+  if (Session.auth) finalHeaders['Authorization'] = `Basic ${Session.auth}`;
   const res = await fetch(`${API_BASE}${path}`, {
     method,
-    headers: { 'Content-Type': 'application/json', ...(headers||{}) },
+    headers: finalHeaders,
     body: body ? JSON.stringify(body) : undefined
   });
   if (!res.ok){
@@ -43,6 +67,23 @@ async function api(path, {method='GET', body, headers}={}){
   return ct.includes('application/json') ? res.json() : res.text();
 }
 
+
+// (remove duplicate earlier handler) — single login handler defined below
+
+$('#btn-logout').onclick = () => {
+  Session.user = null;
+  Session.auth = null;
+  showAuth();
+  toast('Logged out', 'success');
+  render();
+};
+
+
+function hideAdminActionsForUser() {
+  if (Session.user && Session.user.role === 'USER') {
+    document.querySelectorAll('[data-admin-only]').forEach(el => el.style.display = 'none');
+  }
+}
 // Views
 const Views = {
   home: async () => {
@@ -66,10 +107,10 @@ const Views = {
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <div style="font-weight:600">${b.title}</div>
-          <div class="actions">
+          ${isAdmin() ? `<div class="actions">
             <button class="btn" data-edit-book="${b.id}">Edit</button>
             <button class="btn btn-danger" data-del-book="${b.id}">Delete</button>
-          </div>
+          </div>` : ''}
         </div>
         <div class="muted">Tag: ${b.tag}</div>
         <div class="muted">Authors: ${b.authors}</div>
@@ -80,10 +121,10 @@ const Views = {
     return `
       <div class="section-header">
         <h2>Books</h2>
-        <button class="btn btn-primary" id="btn-open-add-book">Add Book</button>
+        ${isAdmin() ? `<button class="btn btn-primary" id="btn-open-add-book">Add Book</button>` : ''}
       </div>
       <div class="grid">${list||'<div class="muted">No books yet</div>'}</div>
-      <div id="panel-add-book" class="modal hidden">
+      ${isAdmin() ? `<div id="panel-add-book" class="modal hidden">
         <div class="modal-card">
           <div class="modal-header"><h3>Add Book</h3><button class="modal-close" data-close>×</button></div>
           <form id="form-add-book" class="form">
@@ -110,7 +151,7 @@ const Views = {
             <button class="btn btn-primary" type="submit">Create</button>
           </form>
         </div>
-      </div>
+      </div>` : ''}
     `;
   },
 
@@ -120,10 +161,10 @@ const Views = {
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <div style="font-weight:600">${c.name}</div>
-          <div class="actions">
+          ${isAdmin() ? `<div class="actions">
             <button class="btn" data-edit-cat="${c.id}">Edit</button>
             <button class="btn btn-danger" data-del-cat="${c.id}">Delete</button>
-          </div>
+          </div>` : ''}
         </div>
         <div class="muted">Short: ${c.shortName}</div>
         <div class="muted">Notes: ${c.notes||'—'}</div>
@@ -132,10 +173,10 @@ const Views = {
     return `
       <div class="section-header">
         <h2>Categories</h2>
-        <button class="btn btn-primary" id="btn-open-add-cat">Add Category</button>
+        ${isAdmin() ? `<button class="btn btn-primary" id="btn-open-add-cat">Add Category</button>` : ''}
       </div>
       <div class="grid">${list||'<div class="muted">No categories yet</div>'}</div>
-      <div id="panel-add-cat" class="modal hidden">
+      ${isAdmin() ? `<div id="panel-add-cat" class="modal hidden">
         <div class="modal-card">
           <div class="modal-header"><h3>Add Category</h3><button class="modal-close" data-close>×</button></div>
           <form id="form-add-cat" class="form">
@@ -147,7 +188,7 @@ const Views = {
             <button class="btn btn-primary" type="submit">Create</button>
           </form>
         </div>
-      </div>
+      </div>` : ''}
     `;
   },
 
@@ -159,10 +200,10 @@ const Views = {
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <div style="font-weight:600">${i.book? i.book.title : 'Unknown'}</div>
-          <div class="actions">
+          ${isAdmin() ? `<div class="actions">
             <button class="btn" data-edit-issued="${i.id}">Edit</button>
             <button class="btn btn-danger" data-del-issued="${i.id}">Delete</button>
-          </div>
+          </div>` : ''}
         </div>
         <div class="muted">Author: ${i.book? i.book.authors : '—'}</div>
         <div class="muted">Status: ${i.returned===1? 'Returned':'Issued'}</div>
@@ -171,10 +212,10 @@ const Views = {
     return `
       <div class="section-header">
         <h2>Issued Books</h2>
-        <button class="btn btn-primary" id="btn-open-issue">Issue Book</button>
+        ${isAdmin() ? `<button class="btn btn-primary" id="btn-open-issue">Issue Book</button>` : ''}
       </div>
       <div class="grid">${list||'<div class="muted">No records yet</div>'}</div>
-      <div id="panel-issue" class="modal hidden">
+      ${isAdmin() ? `<div id="panel-issue" class="modal hidden">
         <div class="modal-card">
           <div class="modal-header"><h3>Issue Book</h3><button class="modal-close" data-close>×</button></div>
           <form id="form-issue" class="form">
@@ -188,7 +229,7 @@ const Views = {
             <button class="btn btn-primary" type="submit">Save</button>
           </form>
         </div>
-      </div>
+      </div>` : ''}
     `;
   }
 };
@@ -223,7 +264,7 @@ function postRender(view){
   overlay.onclick = closeAll;
   $$('.modal [data-close]').forEach(b=> b.onclick = closeAll);
 
-  if (view==='/books'){
+  if (view==='/books' && isAdmin()){
     const btn = $('#btn-open-add-book'); if (btn) btn.onclick = ()=> open('#panel-add-book');
     const form = $('#form-add-book'); if (form) form.onsubmit = async e=>{
       e.preventDefault();
@@ -233,19 +274,19 @@ function postRender(view){
         publisher: fd.get('publisher')||null, isbn: fd.get('isbn')||null,
         status: Number(fd.get('status')), category: { id: Number(fd.get('category')) }
       };
-      try{ await api('/books', { method:'POST', body: payload }); toast('Book added','success'); closeAll(); render(); }
+      try{ await api('/book', { method:'POST', body: payload }); toast('Book added','success'); closeAll(); render(); }
       catch(err){ toast(err.message,'error'); }
     };
     // delete handlers
-    $$("[data-del-book]").forEach(b=> b.onclick = async ()=>{
+    $$('[data-del-book]').forEach(b=> b.onclick = async ()=>{
       if (!confirm('Delete this book?')) return;
       const id = b.getAttribute('data-del-book');
-      try{ await api(`/books/${id}`, { method:'DELETE' }); toast('Deleted','success'); render(); }
+      try{ await api(`/book/${id}`, { method:'DELETE' }); toast('Deleted','success'); render(); }
       catch(err){ toast(err.message,'error'); }
     });
   }
 
-  if (view==='/categories'){
+  if (view==='/categories' && isAdmin()){
     const btn = $('#btn-open-add-cat'); if (btn) btn.onclick = ()=> open('#panel-add-cat');
     const form = $('#form-add-cat'); if (form) form.onsubmit = async e=>{
       e.preventDefault();
@@ -254,7 +295,7 @@ function postRender(view){
       try{ await api('/categories', { method:'POST', body: payload }); toast('Category added','success'); closeAll(); render(); }
       catch(err){ toast(err.message,'error'); }
     };
-    $$("[data-del-cat]").forEach(b=> b.onclick = async ()=>{
+    $$('[data-del-cat]').forEach(b=> b.onclick = async ()=>{
       if (!confirm('Delete this category?')) return;
       const id = b.getAttribute('data-del-cat');
       try{ await api(`/categories/${id}`, { method:'DELETE' }); toast('Deleted','success'); render(); }
@@ -262,7 +303,7 @@ function postRender(view){
     });
   }
 
-  if (view==='/issued'){
+  if (view==='/issued' && isAdmin()){
     const btn = $('#btn-open-issue'); if (btn) btn.onclick = ()=> open('#panel-issue');
     const form = $('#form-issue'); if (form) form.onsubmit = async e=>{
       e.preventDefault();
@@ -292,9 +333,13 @@ $('#form-login').onsubmit = async e=>{
   e.preventDefault();
   const fd = new FormData(e.target);
   try{
-    const resp = await api('/auth/login', { method:'POST', body: { username: fd.get('username'), password: fd.get('password') } });
+    const username = fd.get('username');
+    const password = fd.get('password');
+    const resp = await api('/auth/login', { method:'POST', body: { username, password } });
     if (resp && resp.message === 'LOGIN_SUCCESS'){
       Store.user = { username: resp.username, role: resp.role, display_name: resp.username };
+      Session.user = { username: resp.username, role: resp.role, display_name: resp.username };
+      Session.auth = btoa(`${username}:${password}`);
       showAuth(); closeModals(); toast('Logged in','success'); render();
     } else { throw new Error('Invalid response'); }
   } catch(err){ toast('Login failed','error'); }
@@ -313,9 +358,19 @@ $('#form-signup').onsubmit = async e=>{
 
 $('#btn-logout').onclick = ()=>{ Store.user = null; showAuth(); toast('Logged out','success'); render(); };
 
+// Hide admin-only controls for USER after each render
+(function(){
+  const orig = postRender;
+  postRender = function(view){
+    orig(view);
+    if (Session.user && Session.user.role === 'USER') {
+      document.querySelectorAll('[data-admin-only]').forEach(el => el.style.display = 'none');
+    }
+  };
+})();
+
 // Init
 showAuth();
 window.addEventListener('hashchange', render);
 render();
-
 

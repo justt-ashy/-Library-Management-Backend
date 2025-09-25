@@ -4,6 +4,7 @@ import com.example.LMS_Backend.model.IssuedBook;
 import com.example.LMS_Backend.services.IssuedBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -33,6 +34,7 @@ public class IssuedBookController {
     }
 
     // Create a new issued book (issue a book)
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<IssuedBook> issueBook(@Valid @RequestBody IssuedBook issuedBook) {
         return ResponseEntity.ok(issuedBookService.save(issuedBook));

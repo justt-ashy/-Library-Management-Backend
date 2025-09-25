@@ -1,7 +1,6 @@
 package com.example.LMS_Backend.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,11 +18,18 @@ public class IssuedBook implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id")
     @NotNull
     private Book book;
+
+//    @NotNull
+//    @Column(name = "book_id")
+//    private Long bookId;
+//
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "book_id", insertable = false, updatable = false)
+//    private Book book;
 
 //    @JsonIgnore
 //    @ManyToOne

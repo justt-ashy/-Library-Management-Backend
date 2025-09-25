@@ -2,7 +2,9 @@ package com.example.LMS_Backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
@@ -51,12 +54,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-               .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    .csrf(csrf -> csrf.disable())
+    .authorizeHttpRequests(auth -> auth
+        // static and auth
+        .requestMatchers("/", "/index.html", "/styles.css", "/app.js", "/favicon.ico").permitAll()
+        .requestMatchers("/auth/signup", "/auth/login").permitAll()
 
-        
+        // USER can only view books/categories
+        .requestMatchers(org.springframework.http.HttpMethod.GET, "/books/**", "/categories/**").hasAnyRole("USER","ADMIN")
+
+        // ADMIN can modify books/categories
+        .requestMatchers(org.springframework.http.HttpMethod.POST, "/books/**", "/categories/**").hasRole("ADMIN")
+        .requestMatchers(org.springframework.http.HttpMethod.PUT,  "/books/**", "/categories/**").hasRole("ADMIN")
+        .requestMatchers(org.springframework.http.HttpMethod.DELETE,"/books/**", "/categories/**").hasRole("ADMIN")
+
+        // Issued-books: READ for USER/ADMIN, WRITE for ADMIN only
+        .requestMatchers(org.springframework.http.HttpMethod.GET, "/issued-books/**").hasAnyRole("USER","ADMIN")
+        .requestMatchers(org.springframework.http.HttpMethod.POST, "/issued-books/**").hasRole("ADMIN")
+        .requestMatchers(org.springframework.http.HttpMethod.PUT,  "/issued-books/**").hasRole("ADMIN")
+        .requestMatchers(org.springframework.http.HttpMethod.DELETE,"/issued-books/**").hasRole("ADMIN")
+        .anyRequest().hasRole("ADMIN")
+    )
+    .httpBasic(org.springframework.security.config.Customizer.withDefaults())
+    .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 

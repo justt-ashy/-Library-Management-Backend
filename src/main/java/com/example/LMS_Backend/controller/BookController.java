@@ -4,6 +4,8 @@ import com.example.LMS_Backend.model.Book;
 import com.example.LMS_Backend.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,14 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+//    @GetMapping("/whoami")
+//    public String whoami(Authentication auth){
+//        if(auth==null){
+//            return "Not Aunthenticated";
+//        }
+//        return auth.getAuthorities().toString();
+//    }
 
     // ✅ Get all books
     @GetMapping
@@ -30,13 +40,13 @@ public class BookController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ Add a new book
+    // ✅ Add a new book (maps to /books and /book)
     @PostMapping
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
         return ResponseEntity.ok(bookService.addNew(book));
     }
 
-    // ✅ Update an existing book
+    // ✅ Update an existing book (maps to /books/{id} and /book/{id})
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
         Optional<Book> optionalBook = bookService.get(id);
@@ -56,6 +66,7 @@ public class BookController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     // ✅ Delete a book by ID
     @DeleteMapping("/{id}")

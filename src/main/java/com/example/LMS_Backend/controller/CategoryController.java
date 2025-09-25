@@ -1,9 +1,11 @@
 package com.example.LMS_Backend.controller;
 
+import com.example.LMS_Backend.model.Book;
 import com.example.LMS_Backend.model.Category;
 import com.example.LMS_Backend.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -33,12 +35,14 @@ public class CategoryController {
     }
 
     // Add new category
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Category> addCategory(@Valid @RequestBody Category category) {
+    public ResponseEntity<Category> addCategory( @RequestBody Category category) {
         return ResponseEntity.ok(categoryService.addNew(category));
     }
 
     // Update category
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category) {
         Category existing = categoryService.get(id);
@@ -50,6 +54,7 @@ public class CategoryController {
     }
 
     // Delete category
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         Category existing = categoryService.get(id);
