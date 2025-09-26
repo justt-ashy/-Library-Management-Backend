@@ -40,15 +40,16 @@ public class IssuedBookController {
         return ResponseEntity.ok(issuedBookService.save(issuedBook));
     }
 
-    // Update an issued book (e.g., mark as returned)
+    // Update an issued book (e.g., mark as returned) - only update 'returned'
     @PutMapping("/{id}")
-    public ResponseEntity<IssuedBook> updateIssuedBook(@PathVariable Long id, @Valid @RequestBody IssuedBook issuedBook) {
+    public ResponseEntity<IssuedBook> updateIssuedBook(@PathVariable Long id, @RequestBody IssuedBook issuedBook) {
         IssuedBook existing = issuedBookService.getById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();
         }
-        issuedBook.setId(id);
-        return ResponseEntity.ok(issuedBookService.save(issuedBook));
+        // Only update status; preserve linked book to avoid @NotNull violation
+        existing.setReturned(issuedBook.getReturned());
+        return ResponseEntity.ok(issuedBookService.save(existing));
     }
 
     // Delete an issued book record

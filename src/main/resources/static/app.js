@@ -152,6 +152,35 @@ const Views = {
           </form>
         </div>
       </div>` : ''}
+      ${isAdmin() ? `<div id="panel-edit-book" class="modal hidden">
+        <div class="modal-card">
+          <div class="modal-header"><h3>Edit Book</h3><button class="modal-close" data-close>×</button></div>
+          <form id="form-edit-book" class="form">
+            <input type="hidden" name="id">
+            <div class="row">
+              <label style="flex:1"><span>Title</span><input name="title" required></label>
+              <label style="flex:1"><span>Tag</span><input name="tag" required></label>
+            </div>
+            <label><span>Authors</span><input name="authors" required></label>
+            <div class="row">
+              <label style="flex:1"><span>Publisher</span><input name="publisher"></label>
+              <label style="flex:1"><span>ISBN</span><input name="isbn"></label>
+            </div>
+            <div class="row">
+              <label style="flex:1"><span>Status</span>
+                <select name="status">
+                  <option value="1">Available</option>
+                  <option value="0">Not Available</option>
+                </select>
+              </label>
+              <label style="flex:1"><span>Category</span>
+                <select name="category" required>${catOptions}</select>
+              </label>
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+          </form>
+        </div>
+      </div>` : ''}
     `;
   },
 
@@ -189,6 +218,20 @@ const Views = {
           </form>
         </div>
       </div>` : ''}
+      ${isAdmin() ? `<div id="panel-edit-cat" class="modal hidden">
+        <div class="modal-card">
+          <div class="modal-header"><h3>Edit Category</h3><button class="modal-close" data-close>×</button></div>
+          <form id="form-edit-cat" class="form">
+            <input type="hidden" name="id">
+            <label><span>Name</span><input name="name" required></label>
+            <div class="row">
+              <label style="flex:1"><span>Short Name (max 4)</span><input name="shortName" maxlength="4" required></label>
+              <label style="flex:1"><span>Notes</span><input name="notes"></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+          </form>
+        </div>
+      </div>` : ''}
     `;
   },
 
@@ -220,6 +263,21 @@ const Views = {
           <div class="modal-header"><h3>Issue Book</h3><button class="modal-close" data-close>×</button></div>
           <form id="form-issue" class="form">
             <label><span>Book</span><select name="book" required>${options}</select></label>
+            <label><span>Status</span>
+              <select name="returned">
+                <option value="0">Issued</option>
+                <option value="1">Returned</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Save</button>
+          </form>
+        </div>
+      </div>` : ''}
+      ${isAdmin() ? `<div id="panel-edit-issued" class="modal hidden">
+        <div class="modal-card">
+          <div class="modal-header"><h3>Edit Issued Record</h3><button class="modal-close" data-close>×</button></div>
+          <form id="form-edit-issued" class="form">
+            <input type="hidden" name="id">
             <label><span>Status</span>
               <select name="returned">
                 <option value="0">Issued</option>
@@ -277,6 +335,36 @@ function postRender(view){
       try{ await api('/book', { method:'POST', body: payload }); toast('Book added','success'); closeAll(); render(); }
       catch(err){ toast(err.message,'error'); }
     };
+    // Edit book
+    $$('[data-edit-book]').forEach(b=> b.onclick = async ()=>{
+      const id = b.getAttribute('data-edit-book');
+      try{
+        const book = await api(`/books/${id}`);
+        const f = $('#form-edit-book');
+        f.elements['id'].value = id;
+        f.elements['title'].value = book.title||'';
+        f.elements['tag'].value = book.tag||'';
+        f.elements['authors'].value = book.authors||'';
+        f.elements['publisher'].value = book.publisher||'';
+        f.elements['isbn'].value = book.isbn||'';
+        f.elements['status'].value = String(book.status ?? 1);
+        f.elements['category'].value = book.category ? String(book.category.id) : '';
+        open('#panel-edit-book');
+      }catch(err){ toast('Load failed','error'); }
+    });
+    const editForm = $('#form-edit-book'); if (editForm) editForm.onsubmit = async e=>{
+      e.preventDefault();
+      const fd = new FormData(editForm);
+      const id = fd.get('id');
+      const payload = {
+        title: fd.get('title'), tag: fd.get('tag'), authors: fd.get('authors'),
+        publisher: fd.get('publisher')||null, isbn: fd.get('isbn')||null,
+        status: Number(fd.get('status')),
+        category: { id: Number(fd.get('category')) }
+      };
+      try{ await api(`/book/${id}`, { method:'PUT', body: payload }); toast('Saved','success'); closeAll(); render(); }
+      catch(err){ toast(err.message,'error'); }
+    };
     // delete handlers
     $$('[data-del-book]').forEach(b=> b.onclick = async ()=>{
       if (!confirm('Delete this book?')) return;
@@ -295,6 +383,27 @@ function postRender(view){
       try{ await api('/categories', { method:'POST', body: payload }); toast('Category added','success'); closeAll(); render(); }
       catch(err){ toast(err.message,'error'); }
     };
+    // Edit category
+    $$('[data-edit-cat]').forEach(b=> b.onclick = async ()=>{
+      const id = b.getAttribute('data-edit-cat');
+      try{
+        const cat = await api(`/categories/${id}`);
+        const f = $('#form-edit-cat');
+        f.elements['id'].value = id;
+        f.elements['name'].value = cat.name||'';
+        f.elements['shortName'].value = cat.shortName||'';
+        f.elements['notes'].value = cat.notes||'';
+        open('#panel-edit-cat');
+      }catch(err){ toast('Load failed','error'); }
+    });
+    const editCatForm = $('#form-edit-cat'); if (editCatForm) editCatForm.onsubmit = async e=>{
+      e.preventDefault();
+      const fd = new FormData(editCatForm);
+      const id = fd.get('id');
+      const payload = { name: fd.get('name'), shortName: fd.get('shortName'), notes: fd.get('notes')||null };
+      try{ await api(`/categories/${id}`, { method:'PUT', body: payload }); toast('Saved','success'); closeAll(); render(); }
+      catch(err){ toast(err.message,'error'); }
+    };
     $$('[data-del-cat]').forEach(b=> b.onclick = async ()=>{
       if (!confirm('Delete this category?')) return;
       const id = b.getAttribute('data-del-cat');
@@ -310,6 +419,25 @@ function postRender(view){
       const fd = new FormData(form);
       const payload = { book: { id: Number(fd.get('book')) }, returned: Number(fd.get('returned')) };
       try{ await api('/issued-books', { method:'POST', body: payload }); toast('Saved','success'); closeAll(); render(); }
+      catch(err){ toast(err.message,'error'); }
+    };
+    // Edit issued
+    $$('[data-edit-issued]').forEach(b=> b.onclick = async ()=>{
+      const id = b.getAttribute('data-edit-issued');
+      try{
+        const rec = await api(`/issued-books/${id}`);
+        const f = $('#form-edit-issued');
+        f.elements['id'].value = id;
+        f.elements['returned'].value = String(rec.returned ?? 0);
+        open('#panel-edit-issued');
+      }catch(err){ toast('Load failed','error'); }
+    });
+    const editIssuedForm = $('#form-edit-issued'); if (editIssuedForm) editIssuedForm.onsubmit = async e=>{
+      e.preventDefault();
+      const fd = new FormData(editIssuedForm);
+      const id = fd.get('id');
+      const payload = { returned: Number(fd.get('returned')) };
+      try{ await api(`/issued-books/${id}`, { method:'PUT', body: payload }); toast('Saved','success'); closeAll(); render(); }
       catch(err){ toast(err.message,'error'); }
     };
     $$("[data-del-issued]").forEach(b=> b.onclick = async ()=>{
